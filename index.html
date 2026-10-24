@@ -479,21 +479,21 @@ html.present .tabs .tb{font-size:17px}
 .bg{filter:none!important;stroke:rgba(224,176,64,.12)!important;stroke-width:calc(var(--bw,4px) * 3.2)!important}
 svg.halo{position:absolute;pointer-events:none;overflow:visible;z-index:0;filter:blur(16px);will-change:opacity}
 .obj{will-change:filter;transition:opacity .3s var(--ease),filter .3s,transform .35s var(--ease),width .35s var(--ease),left .35s var(--ease),top .35s var(--ease)}
-/* v13: in a room, the question for what's lit, centred under the green bar, cycling through its top three */
-.qline{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:12;width:min(860px,calc(100% - 440px));min-height:104px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;pointer-events:auto}
+/* v15: in a room, the question for what's lit, small and anchored bottom left; only its last part changes */
+.qline{position:absolute;left:18px;bottom:18px;z-index:12;width:min(820px,calc(100% - 36px));min-height:86px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:8px;text-align:left;pointer-events:auto}
 .qline[hidden]{display:none!important}
-.qline .qe{font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7)}
-.qline .qt{font-family:var(--ff-serif);font-weight:400;font-size:clamp(20px,.8rem + .8vw,28px);line-height:1.22;color:#fff;text-wrap:balance;animation:qin .5s ease both}
-.qline .qt b{font-weight:600;color:var(--banana)}
+.qline .qe{font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.qline .qt{margin:0;font-family:var(--ff-serif);font-weight:400;font-size:clamp(18px,.7rem + .6vw,23px);line-height:1.35;color:var(--banana)}
+.qline .qdv{font-family:var(--ff-sans);font-weight:700;font-size:.78em;letter-spacing:.02em;text-transform:uppercase;color:#fff}
+.qline .qr{color:#fff;display:inline-block;animation:qin .6s ease both}
 .qline .qd{display:flex;gap:8px;align-items:center}
-.qline .qd button{width:9px;height:9px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer}
-.qline .qd button[aria-pressed="true"]{background:var(--banana)}
-.qline .qd span{font-size:12px;color:rgba(255,255,255,.6);margin-left:4px}
-@keyframes qin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-@media (max-width:1100px){.qline{width:calc(100% - 360px)}}
+.qline .qd button{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer}
+.qline .qd button[aria-pressed="true"]{background:#fff}
+.qline .qd span{font-size:12px;color:rgba(255,255,255,.55);margin-left:4px}
+@keyframes qin{from{opacity:0}to{opacity:1}}
 @media (max-width:719px){.qline{display:none!important}}
-html.present .qline .qt{font-size:clamp(22px,.9rem + .9vw,32px)}
-html.present .qline .qt{animation:none}
+html.present .qline .qt{font-size:clamp(20px,.8rem + .7vw,26px)}
+html.present .qline .qr{animation:none}
 /* v14: no text along the bottom of the map; the question at the top says it */
 .legend{display:none!important}
 /* v11: on wide, short screens the map keeps its proportions: at most about twice as wide as it is tall, centred */
@@ -578,8 +578,7 @@ var DEF={
  'setup.had':'Yesterday, room {n} looked at *{r}*. Today you’ll talk about these drivers, one at a time:',
  'setup.go':'Go to room {n}','room.drv':'Your room’s drivers, in order:',
  'q.ey':'The question',
- 'q.d':'How do we stop *{d}* from causing harm through *{r}*?',
- 'q.c':'How do we stop *{d}* from causing harm to *{c}*?',
+ 'q.if':'If it’s true that','q.how':'how do we prevent the harms from','q.howc':'how do we prevent the harms to',
  'q.n':'{i} of {n}','setup.free':'Explore the map without a room','setup.what':'What you’ll do',
  'mine.tag':'Room {r} · {o}',
  'room.has':'Yesterday, room {n} looked at *{r}*. Today you’ll talk about the drivers that push hardest on it.',
@@ -914,7 +913,7 @@ function beamSync(bxs,want){if(!bxs)return;var keep={};
 function layout(){
   var map=$('map'),W=map.clientWidth,H=map.clientHeight;
   if(narrow()||!W||!H){G=null;return;}
-  var ctl=$('ctl'),lg=$('legend'),side=16,top=ctl.offsetTop+ctl.offsetHeight+30,bot=lg.offsetHeight+20;if(S.room)top=Math.max(top,12+104+44);
+  var ctl=$('ctl'),lg=$('legend'),side=16,top=ctl.offsetTop+ctl.offsetHeight+30,bot=lg.offsetHeight+20;if(S.room){top=Math.max(top,96);bot=Math.max(bot,124);}
   /* a member's driver card: smaller, darker, same grammar as the drivers */
   var SHOWN=S.own==='show',ow0=OW[0],ph=0,owW=clampN(W*.12,128,160);OWN.forEach(function(o,i){OW[i].style.width=owW+'px';if(SHOWN)OW[i].hidden=false;});ph=ow0?ow0.offsetHeight:40;
   var cards={},cols=(H-top-bot)<600,x0,x1,y0,y1,bandT=0,bandB=0;
@@ -1145,23 +1144,27 @@ function focusOf(key,brief){
 var QK=null,QI=0,QT=null;
 function low(t){return String(t).toLowerCase().replace(/\bai\b/g,'AI');}
 function qItems(key){
+  /* each item: {d: the driver, r: the risk or group, c: true when it's a group}; the driver leads, so only the end changes when it cycles */
   var m=MD(),t=key.split(':'),kind=t[0],id=t[1],out=[];
   if(kind==='d'){if(ACT().indexOf(id)<0)return [];var rs=[];CLUSTERS.forEach(function(c){rs=rs.concat(c.risks);});
-    rs.sort(function(a,b){return m.s[id+b]-m.s[id+a];}).slice(0,3).forEach(function(r){out.push(sayHtml('q.d',{d:low(plain('drv.'+id)),r:plain('risk.'+r)}));});}
-  else if(kind==='r'){ACT().slice().sort(function(a,b){return m.s[b+id]-m.s[a+id];}).slice(0,3).forEach(function(d){out.push(sayHtml('q.d',{d:low(plain('drv.'+d)),r:plain('risk.'+id)}));});}
-  else if(kind==='c'){ACT().slice().sort(function(a,b){return m.cs[b+id]-m.cs[a+id];}).slice(0,3).forEach(function(d){out.push(sayHtml('q.c',{d:low(plain('drv.'+d)),c:low(plain('cluster.'+id))}));});}
+    rs.sort(function(a,b){return m.s[id+b]-m.s[id+a];}).slice(0,3).forEach(function(r){out.push({d:id,r:plain('risk.'+r)});});}
+  else if(kind==='r'){ACT().slice().sort(function(a,b){return m.s[b+id]-m.s[a+id];}).slice(0,3).forEach(function(d){out.push({d:d,r:plain('risk.'+id)});});}
+  else if(kind==='c'){ACT().slice().sort(function(a,b){return m.cs[b+id]-m.cs[a+id];}).slice(0,3).forEach(function(d){out.push({d:d,r:low(plain('cluster.'+id)),c:1});});}
   return out;
 }
-function paintQ(){
+function qHtml(x,fresh){
+  return '<p class="qt">'+esc(plain('q.if'))+' <span class="qdv">'+esc(plain('drv.'+x.d))+'</span>,<br>'+esc(plain(x.c?'q.howc':'q.how'))+' <span class="qr"'+(fresh?'':' style="animation:none"')+'>'+esc(x.r)+'</span>?</p>';
+}
+function paintQ(fresh){
   var q=$('qline');if(!q)return;var items=QK?qItems(QK):[];
-  if(!items.length){q.innerHTML='<span class="qe" data-copy="q.ey">'+rich('q.ey')+'</span><p class="qt" data-copy="wtd.q">'+rich('wtd.q')+'</p>';return;}
+  if(!items.length){q.innerHTML='<span class="qe" data-copy="q.ey">'+rich('q.ey')+'</span><p class="qt" data-copy="wtd.q" style="color:#fff">'+rich('wtd.q')+'</p>';return;}
   QI=QI%items.length;
-  var h='<span class="qe">'+esc(plain('q.ey'))+'</span><p class="qt">'+items[QI]+'</p>';
+  var h='<span class="qe">'+esc(plain('q.ey'))+'</span>'+qHtml(items[QI],fresh);
   if(items.length>1){h+='<div class="qd">';items.forEach(function(x,i){h+='<button type="button" data-i="'+i+'" aria-pressed="'+(i===QI)+'" aria-label="'+esc(plain('q.n',{i:i+1,n:items.length}))+'"></button>';});h+='<span>'+esc(plain('q.n',{i:QI+1,n:items.length}))+'</span></div>';}
   q.innerHTML=h;
-  [].forEach.call(q.querySelectorAll('.qd button'),function(b){b.addEventListener('click',function(e){e.stopPropagation();QI=+b.getAttribute('data-i');paintQ();startQ();});});
+  [].forEach.call(q.querySelectorAll('.qd button'),function(b){b.addEventListener('click',function(e){e.stopPropagation();QI=+b.getAttribute('data-i');paintQ(true);startQ();});});
 }
-function startQ(){clearInterval(QT);QT=null;var n=QK?qItems(QK).length:0;if(n>1&&!RMQ())QT=setInterval(function(){QI++;paintQ();},5000);}
+function startQ(){clearInterval(QT);QT=null;var n=QK?qItems(QK).length:0;if(n>1&&!RMQ())QT=setInterval(function(){QI++;paintQ(true);},7000);}
 function renderQ(key){
   var q=$('qline');if(!q)return;q.hidden=!S.room||S.view!=='map';if(q.hidden){clearInterval(QT);return;}
   if(key&&key.charAt(0)==='o')key=null;
