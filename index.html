@@ -230,6 +230,14 @@ html.present .rl{font-size:18px}
 html.present .hov{font-size:17px}
 html.present .hov b{font-size:20px}
 @media (max-width:719px){.plist li .bdk{margin-left:auto}}
+
+/* ================= 23 Oct: worksheet link (accessible workbook in Canva), top right of the header ================= */
+.wbk{flex:none;display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.32);font-size:20px;line-height:1;text-decoration:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 4px 18px rgba(0,0,0,.12);transition:background .2s,transform .2s}
+.wbk:hover{background:rgba(255,255,255,.3);transform:translateY(-1px)}
+.wbk:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.top .wrap>.wbk{margin-left:auto}
+@media (max-width:560px){.wbk{width:34px;height:34px;font-size:17px}}
+html.present .wbk{transition:none;transform:none}
 </style>
 <div id="root"></div>
 <script type="application/json" id="copy">{}</script>
@@ -289,13 +297,13 @@ var DEF={
  'wtd.think':'*About 5 minutes* — think on your own and make some notes.',
  'wtd.talk':'*About 45 minutes* — talk about it together.',
  'wtd.next':'Then the facilitator moves the room on to the next driver.',
- 'drv.D1':'Cheap and Fast Beats Careful','drvm.D1':'Replacing people with AI saves money, and being second looks like losing, so quality and checks get squeezed.',
- 'drv.D2':'Hooking and Swaying People Pays','drvm.D2':'Products earn more when people can’t step away, and changing what people believe or vote for is valuable.',
- 'drv.D3':'What Was Hard Is Now Easy','drvm.D3':'Things that once needed skill or effort can now be attempted by far more people, quickly and in bulk.',
+ 'drv.D1':'The Race to Cut Costs and Come First','drvm.D1':'Organisations are incentivised to use AI to cut staff and to beat rivals, even when that means worse work is produced or less time for checking.',
+ 'drv.D2':'It Pays to Manipulate People','drvm.D2':'Using AI to hook people\'s attention and sway their beliefs can give money and power to those that do so.',
+ 'drv.D3':'What Was Hard Is Now Easy','drvm.D3':'In the past, skill and time were barriers to causing harm, however AI has removed an \'effort filter\', so loads more people can try things.',
  'drv.D4':'A Few Companies Own the Foundations','drvm.D4':'Many people, organisations and governments depend on the same few firms, so their choices and mistakes spread widely.',
- 'drv.D5':'Judgement Handed Over, Not Handed Back','drvm.D5':'Systems act faster than people can follow, and the person who signs off may simply go along with them.',
- 'drv.D6':'Checking Happens on the Companies’ Terms','drvm.D6':'Independent testing costs far more than building AI, and testers usually rely on access the company chooses to give.',
- 'drv.D7':'Rules Lag and Blame Slips Away','drvm.D7':'Laws often move more slowly than AI and stop at borders, and when harm happens, everyone can point elsewhere.',
+ 'drv.D5':'Decisions Get Handed to the Machines','drvm.D5':'A person formally signs off, but in practice they just rubber stamp the judgment of an AI model. Maybe they can’t keep up with it, or have no real power to overrule it.',
+ 'drv.D6':'Checking Occurs on Companies’ Own Terms','drvm.D6':'Checking an AI system takes time, money and skill — and the company being checked often decides who tests it and for how long.',
+ 'drv.D7':'The Gaps in Rules and Responsibilities','drvm.D7':'Laws often lag behind AI and stop at borders, blame can get passed around and it can be hard to challenge automated decisions.',
  'risk.R06':'AI with no safety guardrails',
  'risk.R08':'Using AI to predict and steer people’s lives',
  'risk.R01':'AI used to manipulate people for profit',
@@ -470,7 +478,7 @@ function arrowGeo(s,q,e,w){
   var La=w*1.3+15,Wa=w*1.6+17,span=Math.sqrt(Math.pow(e[0]-s[0],2)+Math.pow(e[1]-s[1],2));
   if(span<La*2.2){var k=Math.max(.45,span/(La*2.2));La*=k;Wa*=k;}
   var bx=e[0]-ux*La,by=e[1]-uy*La,ix=bx+ux*La*.2,iy=by+uy*La*.2;
-  var d='M'+s[0].toFixed(1)+' '+s[1].toFixed(1)+' Q'+q[0].toFixed(1)+' '+q[1].toFixed(1)+' '+(bx+ux*2).toFixed(1)+' '+(by+uy*2).toFixed(1);
+  var d='M'+s[0].toFixed(1)+' '+s[1].toFixed(1)+' Q'+q[0].toFixed(1)+' '+q[1].toFixed(1)+' '+(bx+ux*La*.45).toFixed(1)+' '+(by+uy*La*.45).toFixed(1);
   var pts=[[e[0],e[1]],[bx+nx*Wa/2,by+ny*Wa/2],[ix,iy],[bx-nx*Wa/2,by-ny*Wa/2]].map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ');
   return {d:d,pts:pts};
 }
@@ -740,4 +748,14 @@ window.addEventListener('beforeunload',function(e){if(saveTimer&&$('edstatus').t
   }).catch(function(){});
 })();
 </script>
+<style id="wbk-icon">/* 23 Oct: worksheet icon opens into a pill on hover */.wbk{color:#fff}a.wbk{display:inline-flex;align-items:center;justify-content:flex-start;gap:8px;width:auto;max-width:40px;padding:0 14px 0 10px;box-sizing:border-box;overflow:hidden;white-space:nowrap;border-radius:999px;transition:max-width .3s ease,background .2s}.wbk svg{display:block;flex:none;width:19px;height:19px}.wbk .wbkl{font-size:14px;font-weight:700;line-height:1;color:#fff;opacity:0;transition:opacity .2s}a.wbk:hover,a.wbk:focus-visible{max-width:220px;transform:none}a.wbk:hover .wbkl,a.wbk:focus-visible .wbkl{opacity:1}@media (max-width:560px){a.wbk{max-width:34px;padding-left:8px}.wbk svg{width:17px;height:17px}}@media (prefers-reduced-motion:reduce){a.wbk,.wbk .wbkl{transition:none}}</style>
+<script id="wbk-js">/* 23 Oct: worksheet link. Opens this activity's page of the accessible workbook in a new tab */
+(function(){var URL='https://canva.link/ufm9lf8fbjd0361',AT='tm';
+ function add(){if(document.getElementById("wbk"))return;var t=document.getElementById(AT);if(!t||!t.parentNode)return;
+  var a=document.createElement("a");a.id="wbk";a.className="wbk";a.href=URL;a.target="_blank";a.rel="noopener";
+  a.title="Worksheet (opens in a new tab)";a.setAttribute("aria-label","Open the printable worksheet for this activity, in a new tab");
+  a.innerHTML="<svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M4 1.8h5.3L12.5 5v8.2a1 1 0 0 1-1 1h-7.5a1 1 0 0 1-1-1V2.8a1 1 0 0 1 1-1z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><path d=\"M9.2 1.9V5h3.2M5.4 8.2h5.2M5.4 10.9h3.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><span class=\"wbkl\">Open the worksheet</span>";t.parentNode.insertBefore(a,t);}
+ add();try{new MutationObserver(add).observe(document.body,{childList:true,subtree:true});}catch(e){}
+})();</script>
+
 </body></html>
