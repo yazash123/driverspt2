@@ -473,6 +473,27 @@ html.present .todop .wq{font-size:21px}
 html.present .tabs .tb{font-size:17px}
 .hdr h1 b{font-family:var(--ff-sans);font-weight:700;letter-spacing:-.02em}
 @media (min-width:720px){.hdr h1{font-size:clamp(32px,1.1rem + 1.9vw,54px);line-height:1}}
+/* v12: lighter to draw. The thin threads don't fade one by one; the group glows are their own small, pre-blurred layers so fading them is cheap; cards fade their filter on the graphics card and their soft shadow changes without a slow fade */
+.fib{transition:none}
+.fx.focus #fg{visibility:hidden}
+.bg{filter:none!important;stroke:rgba(224,176,64,.12)!important;stroke-width:calc(var(--bw,4px) * 3.2)!important}
+svg.halo{position:absolute;pointer-events:none;overflow:visible;z-index:0;filter:blur(16px);will-change:opacity}
+.obj{will-change:filter;transition:opacity .3s var(--ease),filter .3s,transform .35s var(--ease),width .35s var(--ease),left .35s var(--ease),top .35s var(--ease)}
+/* v13: in a room, the question for what's lit, centred under the green bar, cycling through its top three */
+.qline{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:12;width:min(860px,calc(100% - 440px));min-height:104px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;pointer-events:auto}
+.qline[hidden]{display:none!important}
+.qline .qe{font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.qline .qt{font-family:var(--ff-serif);font-weight:400;font-size:clamp(20px,.8rem + .8vw,28px);line-height:1.22;color:#fff;text-wrap:balance;animation:qin .5s ease both}
+.qline .qt b{font-weight:600;color:var(--banana)}
+.qline .qd{display:flex;gap:8px;align-items:center}
+.qline .qd button{width:9px;height:9px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer}
+.qline .qd button[aria-pressed="true"]{background:var(--banana)}
+.qline .qd span{font-size:12px;color:rgba(255,255,255,.6);margin-left:4px}
+@keyframes qin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (max-width:1100px){.qline{width:calc(100% - 360px)}}
+@media (max-width:719px){.qline{display:none!important}}
+html.present .qline .qt{font-size:clamp(22px,.9rem + .9vw,32px)}
+html.present .qline .qt{animation:none}
 /* v11: on wide, short screens the map keeps its proportions: at most about twice as wide as it is tall, centred */
 @media (min-width:720px){
   .main{background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(88,120,160,.28),transparent 70%),linear-gradient(180deg,#2B4568 0%,var(--deep) 100%)}
@@ -517,7 +538,7 @@ html.present .su-what ol,html.present .join .jr,html.present .join li{font-size:
 html.present .join{animation:none}
 </style>
 <div id="root"></div>
-<script type="application/json" id="copy">{}</script>
+<script type="application/json" id="copy">{"wtd.q":"If this driver is here to stay, what would need to change so it doesn’t lead to these top harms?"}</script>
 <script id="app">var SHELL='<header class="hdr"><a class="hubback" href="https://www.houseofthepeople.uk/session6" target="_top" aria-label="Back to all the weekend activities" title="Back to all the weekend activities"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2 L4 7 L9 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="hbt">All activities</span></a>'+
  '<h1 data-copy="mast.title" data-static></h1><div class="hr">'+
  '<span class="opt" id="opt"><button type="button" id="optb" class="optb" aria-expanded="false"></button><span class="optp" id="optp" hidden></span></span><button type="button" id="tm" class="tm"></button><button type="button" id="tmr" class="tmr" hidden></button></div><button type="button" id="pres" class="pres" aria-pressed="false"></button></header>'+
@@ -525,7 +546,7 @@ html.present .join{animation:none}
  '<section class="setup" id="setup" aria-label="Set up" hidden></section>'+
  '<main class="main" id="main">'+
  '<section class="map" id="map" aria-label="The threads map"><svg class="fx" id="fx" aria-hidden="true"><defs><filter id="hblur" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="16"/></filter></defs><g id="halos"></g><g id="stems"></g><g id="fg"></g><g id="og"></g></svg><svg class="fx2" id="bx" aria-hidden="true"></svg>'+
- '<div class="ctl" id="ctl"></div><div class="legend" id="legend"><p class="say" id="say"></p><p class="key" id="key"></p></div>'+
+ '<div class="qline" id="qline" aria-live="polite" hidden></div><div class="ctl" id="ctl"></div><div class="legend" id="legend"><p class="say" id="say"></p><p class="key" id="key"></p></div>'+
  '<div class="pick" id="pick"></div><div class="pd" id="pd" hidden></div><p class="sr" id="sr" aria-live="polite"></p>'+
  '<div class="todo" id="todo"><button type="button" class="todob" id="todob" aria-expanded="false"></button><div class="todop" id="todop" role="dialog" aria-label="What to do" hidden></div></div></section>'+
  '<aside class="wtd" id="wtd" aria-label="Details" hidden><button type="button" class="wx" id="wtdx"></button><div class="dt" id="dt" hidden></div></aside>'+
@@ -553,7 +574,11 @@ var DEF={
  'tab.setup':'Set up','tab.map':'The map',
  'setup.ey':'Connecting drivers · Part 2','setup.q':'Which room are you in?',
  'setup.had':'Yesterday, room {n} looked at *{r}*. Today you’ll talk about these drivers, one at a time:',
- 'setup.go':'Go to room {n}','room.drv':'Your room’s drivers, in order:','setup.free':'Explore the map without a room','setup.what':'What you’ll do',
+ 'setup.go':'Go to room {n}','room.drv':'Your room’s drivers, in order:',
+ 'q.ey':'The question',
+ 'q.d':'How do we stop *{d}* from causing harm through *{r}*?',
+ 'q.c':'How do we stop *{d}* from causing harm to *{c}*?',
+ 'q.n':'{i} of {n}','setup.free':'Explore the map without a room','setup.what':'What you’ll do',
  'mine.tag':'Room {r} · {o}',
  'room.has':'Yesterday, room {n} looked at *{r}*. Today you’ll talk about the drivers that push hardest on it.',
  'wtd.basic':'Choose your room on Set up.\nExplore the map together for *15 minutes*.\nPress *Start talking*. Spend *10 minutes* on each driver.',
@@ -811,7 +836,7 @@ function renderCtl(){
   renderOpt();renderTabs();
 }
 /* ---------- the green bar: Set up, then the room's steps; the room menu at the right ---------- */
-function setRoom(n){S.room=n||0;try{history.replaceState(null,'',S.room?'#g'+S.room:location.pathname+location.search);}catch(e){}paintMine();goStep(0,false);renderTodo();}
+function setRoom(n){var had=!!S.room;S.room=n||0;if(had!==!!S.room)setTimeout(layout,0);try{history.replaceState(null,'',S.room?'#g'+S.room:location.pathname+location.search);}catch(e){}paintMine();goStep(0,false);renderTodo();}
 function showView(v){S.view=v;save();$('setup').hidden=v!=='setup';$('main').hidden=v==='setup';
   if(v==='setup'){LOCK=null;OPEN=false;HOV=null;SEL=S.room||0;renderSetup();}
   renderTabs();if(v==='map'){layout();applyFocus();}}
@@ -887,7 +912,7 @@ function beamSync(bxs,want){if(!bxs)return;var keep={};
 function layout(){
   var map=$('map'),W=map.clientWidth,H=map.clientHeight;
   if(narrow()||!W||!H){G=null;return;}
-  var ctl=$('ctl'),lg=$('legend'),side=16,top=ctl.offsetTop+ctl.offsetHeight+30,bot=lg.offsetHeight+20;
+  var ctl=$('ctl'),lg=$('legend'),side=16,top=ctl.offsetTop+ctl.offsetHeight+30;if(S.room)top=Math.max(top,12+104+44),bot=lg.offsetHeight+20;
   /* a member's driver card: smaller, darker, same grammar as the drivers */
   var SHOWN=S.own==='show',ow0=OW[0],ph=0,owW=clampN(W*.12,128,160);OWN.forEach(function(o,i){OW[i].style.width=owW+'px';if(SHOWN)OW[i].hidden=false;});ph=ow0?ow0.offsetHeight:40;
   var cards={},cols=(H-top-bot)<600,x0,x1,y0,y1,bandT=0,bandB=0;
@@ -938,7 +963,7 @@ function layout(){
       if(n)c+=A.w*B.w*n*(A.r===B.r?2:6);}
     return c;
   }
-  var CK=[W,H,cols,SHOWN].join('|'),best=LAYC[CK];
+  var CK=[W,H,cols,SHOWN,S.room?1:0].join('|'),best=LAYC[CK];
   if(!best){
     var perm=DRIVERS.slice(),ch={};Object.keys(RR).forEach(function(rk){ch[rk]=0;});var cc=cost(perm,ch);
     for(var round=0;round<3;round++){
@@ -972,15 +997,20 @@ function layout(){
   drawThreads();restStyle();applyFocus();
 }
 /* one thin path per thread; threads between the same two things travel together as a loose cable */
-var BUN={},HALO={},CBUN={};
+var BUN={},HALO={},CBUN={},HALOEL=[];
 function drawThreads(){
   var svg=$('fx'),W=G.W,H=G.H;svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox','0 0 '+W+' '+H);
   var st=$('stems'),fg=$('fg'),og=$('og'),hl=$('halos');st.innerHTML='';fg.innerHTML='';og.innerHTML='';hl.innerHTML='';HALO={};CBUN={};
   /* each group's glow: its circle and its risks, blurred into one shape */
-  CLUSTERS.forEach(function(c){var p=G.P[c.id],g=svgEl('g',{'class':'halo',filter:'url(#hblur)'});
+  HALOEL.forEach(function(e){e.remove();});HALOEL=[];
+  CLUSTERS.forEach(function(c){var p=G.P[c.id],x0=p.x-p.r*1.22,x1=p.x+p.r*1.22,y0=p.y-p.r*1.22,y1=p.y+p.r*1.22;
+    c.risks.forEach(function(rk){var q=G.Q[rk];x0=Math.min(x0,q.x-q.r*2);x1=Math.max(x1,q.x+q.r*2);y0=Math.min(y0,q.y-q.r*2);y1=Math.max(y1,q.y+q.r*2);});
+    var pad=8,bx=Math.floor(x0-pad),by=Math.floor(y0-pad),bw=Math.ceil(x1-x0+2*pad),bh=Math.ceil(y1-y0+2*pad);
+    /* one small layer per group, blurred by the browser once; only its opacity changes after that */
+    var g=svgEl('svg',{'class':'halo',width:bw,height:bh,viewBox:bx+' '+by+' '+bw+' '+bh,'aria-hidden':'true'});g.style.left=bx+'px';g.style.top=by+'px';
     g.appendChild(svgEl('circle',{cx:p.x.toFixed(1),cy:p.y.toFixed(1),r:(p.r*1.22).toFixed(1)}));
     c.risks.forEach(function(rk){var q=G.Q[rk];g.appendChild(svgEl('line',{x1:p.x.toFixed(1),y1:p.y.toFixed(1),x2:q.x.toFixed(1),y2:q.y.toFixed(1),'stroke-width':(q.r*2.4).toFixed(1)}));g.appendChild(svgEl('circle',{cx:q.x.toFixed(1),cy:q.y.toFixed(1),r:(q.r*2).toFixed(1)}));});
-    hl.appendChild(g);HALO[c.id]=g;
+    $('map').insertBefore(g,$('fx'));HALOEL.push(g);HALO[c.id]=g;
     /* a beam from each driver to the group as a whole */
     DRIVERS.forEach(function(d){var k=G.cards[d],A={x:k.cx,y:k.cy,w:k.w,h:k.h},B={x:p.x,y:p.y,round:1,rr:p.r},vx=B.x-A.x,vy=B.y-A.y,len=Math.sqrt(vx*vx+vy*vy)||1,nx=-vy/len,ny=vx/len,b2=Math.min(16,len*.04),cx=(A.x+B.x)/2+nx*b2,cy=(A.y+B.y)/2+ny*b2,s=rimPt(A,cx,cy,1),e=rimPt(B,cx,cy,2);
       CBUN[d+'|'+c.id]='M'+s[0].toFixed(1)+' '+s[1].toFixed(1)+' Q'+cx.toFixed(1)+' '+cy.toFixed(1)+' '+e[0].toFixed(1)+' '+e[1].toFixed(1);});
@@ -1109,8 +1139,35 @@ function focusOf(key,brief){
   if(brief&&more)out.say+=' <span class="mo">'+esc(plain('say.more'))+'</span>';
   return out;
 }
+/* ---------- the question at the top, in a room: for the driver (or risk, or group) that's lit, cycling through its top three ---------- */
+var QK=null,QI=0,QT=null;
+function low(t){return String(t).toLowerCase().replace(/\bai\b/g,'AI');}
+function qItems(key){
+  var m=MD(),t=key.split(':'),kind=t[0],id=t[1],out=[];
+  if(kind==='d'){if(ACT().indexOf(id)<0)return [];var rs=[];CLUSTERS.forEach(function(c){rs=rs.concat(c.risks);});
+    rs.sort(function(a,b){return m.s[id+b]-m.s[id+a];}).slice(0,3).forEach(function(r){out.push(sayHtml('q.d',{d:low(plain('drv.'+id)),r:plain('risk.'+r)}));});}
+  else if(kind==='r'){ACT().slice().sort(function(a,b){return m.s[b+id]-m.s[a+id];}).slice(0,3).forEach(function(d){out.push(sayHtml('q.d',{d:low(plain('drv.'+d)),r:plain('risk.'+id)}));});}
+  else if(kind==='c'){ACT().slice().sort(function(a,b){return m.cs[b+id]-m.cs[a+id];}).slice(0,3).forEach(function(d){out.push(sayHtml('q.c',{d:low(plain('drv.'+d)),c:low(plain('cluster.'+id))}));});}
+  return out;
+}
+function paintQ(){
+  var q=$('qline');if(!q)return;var items=QK?qItems(QK):[];
+  if(!items.length){q.innerHTML='<span class="qe" data-copy="q.ey">'+rich('q.ey')+'</span><p class="qt" data-copy="wtd.q">'+rich('wtd.q')+'</p>';return;}
+  QI=QI%items.length;
+  var h='<span class="qe">'+esc(plain('q.ey'))+'</span><p class="qt">'+items[QI]+'</p>';
+  if(items.length>1){h+='<div class="qd">';items.forEach(function(x,i){h+='<button type="button" data-i="'+i+'" aria-pressed="'+(i===QI)+'" aria-label="'+esc(plain('q.n',{i:i+1,n:items.length}))+'"></button>';});h+='<span>'+esc(plain('q.n',{i:QI+1,n:items.length}))+'</span></div>';}
+  q.innerHTML=h;
+  [].forEach.call(q.querySelectorAll('.qd button'),function(b){b.addEventListener('click',function(e){e.stopPropagation();QI=+b.getAttribute('data-i');paintQ();startQ();});});
+}
+function startQ(){clearInterval(QT);QT=null;var n=QK?qItems(QK).length:0;if(n>1&&!RMQ())QT=setInterval(function(){QI++;paintQ();},5000);}
+function renderQ(key){
+  var q=$('qline');if(!q)return;q.hidden=!S.room||S.view!=='map';if(q.hidden){clearInterval(QT);return;}
+  if(key&&key.charAt(0)==='o')key=null;
+  if(key===QK&&q.firstChild)return;QK=key;QI=0;paintQ();startQ();
+}
+$('qline').addEventListener('click',function(e){e.stopPropagation();});
 function applyFocus(){
-  var key=LOCK||HOV,svg=$('fx'),og=$('og'),bxs=$('bx');hidePeek();var want=[];
+  var key=LOCK||HOV,svg=$('fx'),og=$('og'),bxs=$('bx');hidePeek();var want=[];renderQ(key);
   LITF.forEach(function(f){if(f.el){f.el.classList.remove('on');f.el.style.removeProperty('--ol');}});LITF=[];og.innerHTML='';
   Object.keys(OBJ).forEach(function(k){var o=OBJ[k];o.classList.remove('lit','foc','shade','open');o.style.removeProperty('--g');o.style.removeProperty('--bw');});
   Object.keys(RL).forEach(function(r){RL[r].hidden=true;RL[r].classList.remove('open','l');});
