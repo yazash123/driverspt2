@@ -578,7 +578,7 @@ var DEF={
  'setup.had':'Yesterday, room {n} looked at *{r}*. Today you’ll talk about these drivers, one at a time:',
  'setup.go':'Go to room {n}','room.drv':'Your room’s drivers, in order:',
  'q.ey':'The question',
- 'q.if':'If it’s true that','q.how':'how do we prevent the harms from','q.howc':'how do we prevent the harms to',
+ 'q.if':'If it’s true that','q.drv.D7':'There are gaps in rules and responsibilities','q.how':'how do we prevent the harms from','q.howc':'how do we prevent the harms to',
  'q.n':'{i} of {n}','setup.free':'Explore the map without a room','setup.what':'What you’ll do',
  'mine.tag':'Room {r} · {o}',
  'room.has':'Yesterday, room {n} looked at *{r}*. Today you’ll talk about the drivers that push hardest on it.',
@@ -1153,7 +1153,7 @@ function qItems(key){
   return out;
 }
 function qHtml(x,fresh){
-  return '<p class="qt">'+esc(plain('q.if'))+' <span class="qdv">'+esc(plain('drv.'+x.d))+'</span>,<br>'+esc(plain(x.c?'q.howc':'q.how'))+' <span class="qr"'+(fresh?'':' style="animation:none"')+'>'+esc(x.r)+'</span>?</p>';
+  return '<p class="qt">'+esc(plain('q.if'))+' <span class="qdv">'+esc(plain(DEF['q.drv.'+x.d]!=null?'q.drv.'+x.d:'drv.'+x.d))+'</span>,<br>'+esc(plain(x.c?'q.howc':'q.how'))+' <span class="qr"'+(fresh?'':' style="animation:none"')+'>'+esc(x.r)+'</span>?</p>';
 }
 function paintQ(fresh){
   var q=$('qline');if(!q)return;var items=QK?qItems(QK):[];
