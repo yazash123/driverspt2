@@ -912,7 +912,7 @@ function beamSync(bxs,want){if(!bxs)return;var keep={};
 function layout(){
   var map=$('map'),W=map.clientWidth,H=map.clientHeight;
   if(narrow()||!W||!H){G=null;return;}
-  var ctl=$('ctl'),lg=$('legend'),side=16,top=ctl.offsetTop+ctl.offsetHeight+30;if(S.room)top=Math.max(top,12+104+44),bot=lg.offsetHeight+20;
+  var ctl=$('ctl'),lg=$('legend'),side=16,top=ctl.offsetTop+ctl.offsetHeight+30,bot=lg.offsetHeight+20;if(S.room)top=Math.max(top,12+104+44);
   /* a member's driver card: smaller, darker, same grammar as the drivers */
   var SHOWN=S.own==='show',ow0=OW[0],ph=0,owW=clampN(W*.12,128,160);OWN.forEach(function(o,i){OW[i].style.width=owW+'px';if(SHOWN)OW[i].hidden=false;});ph=ow0?ow0.offsetHeight:40;
   var cards={},cols=(H-top-bot)<600,x0,x1,y0,y1,bandT=0,bandB=0;
