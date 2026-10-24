@@ -494,6 +494,8 @@ svg.halo{position:absolute;pointer-events:none;overflow:visible;z-index:0;filter
 @media (max-width:719px){.qline{display:none!important}}
 html.present .qline .qt{font-size:clamp(22px,.9rem + .9vw,32px)}
 html.present .qline .qt{animation:none}
+/* v14: no text along the bottom of the map; the question at the top says it */
+.legend{display:none!important}
 /* v11: on wide, short screens the map keeps its proportions: at most about twice as wide as it is tall, centred */
 @media (min-width:720px){
   .main{background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(88,120,160,.28),transparent 70%),linear-gradient(180deg,#2B4568 0%,var(--deep) 100%)}
