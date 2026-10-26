@@ -1183,8 +1183,7 @@ function drawThreads(){
       f.dpath='M'+s0[0].toFixed(1)+' '+s0[1].toFixed(1)+' Q'+qx.toFixed(1)+' '+qy.toFixed(1)+' '+e0[0].toFixed(1)+' '+e0[1].toFixed(1);
       var p=svgEl('path',{d:f.dpath,'class':'fib'+(f.d?'':' own'),pathLength:'100'});fg.appendChild(p);f.el=p;});
   });
-  var md=MD(),top3=[];DRIVERS.forEach(function(d){Object.keys(G.Q).forEach(function(rk){if(md.e[d+rk]>0)top3.push([md.e[d+rk],d+'|'+rk]);});});
-  top3.sort(function(p,q){return q[0]-p[0];}).slice(0,3).forEach(function(t){if(BUN[t[1]])fg.appendChild(svgEl('path',{d:BUN[t[1]],'class':'hl'}));});
+  /* the strongest links already show as the brightest, thickest threads: no extra line on top */
 }
 /* at rest: strong links glow faintly, the rest sit in shadow; drivers as bright as the attention they got */
 function restStyle(){
